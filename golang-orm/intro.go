@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
-
+import (
+	"fmt"
+	_ "sync"
+)
 func main() {
-	fmt.Println("hello world")
+
+	// var waitGroup sync.WaitGroup
+	// sampleParam := "sample"
+
+	// waitGroup.Add(1)
+	// go func() {
+	// 	defer waitGroup.Done()
+	// 	sampleParam = "welcome"
+	// }()
+	// waitGroup.Wait()
+	// fmt.Println(sampleParam)
 }

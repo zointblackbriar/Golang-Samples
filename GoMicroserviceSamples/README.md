@@ -9,3 +9,18 @@ export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
 source ~/.bashrc
 ```
+
+### Testing sample endpoint (CURL Command)
+
+You can use the following command: 
+
+```bash
+curl -i http://localhost:8000/sampleendpoint
+```
+
+### Install TableWriter Package
+
+```bash 
+go get github.com/olekukonko/tablewriter
+```
+
