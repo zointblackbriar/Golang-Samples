@@ -24,3 +24,29 @@ curl -i http://localhost:8000/sampleendpoint
 go get github.com/olekukonko/tablewriter
 ```
 
+### Run your test cases
+
+```bash
+go test -v
+```
+
+## Local Package Import
+
+Use the following code in order to import local package in other modules
+
+```bash 
+go mod edit -replace example.com/goroutinesample=../goroutinesample
+go mod tidy
+go run .
+```
+
+## Formatting 
+
+You can use external formatting tool as follows: 
+
+```bash 
+gofmt -w goroutinesample/goroutinesamp.go
+```
+
+
+

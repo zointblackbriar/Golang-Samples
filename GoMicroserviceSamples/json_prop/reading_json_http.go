@@ -1,10 +1,11 @@
-package main 
+package json_prop
+
+// package main
 
 import (
 	"encoding/json"
-	"fmt"
+	_ "log"
 	"net/http"
-	"log"
 )
 
 type HelloWorldResponse struct {
@@ -22,8 +23,5 @@ func handlerFunc(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(response)
 	if err != nil {
 		panic("Oops")
-	} 
-
-	fmt.FPrint(w, string(data))
+	}
 }
-
