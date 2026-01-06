@@ -1,100 +1,154 @@
-### INFORMATION
+# Golang Blockchain Implementation
 
-What is the gRPC 
+A complete blockchain implementation in Go featuring proof-of-work consensus, transaction handling, and UTXO (Unspent Transaction Output) model.
 
-- It is an open source framework. 
+## Features
 
-- It is the part of the CLoud Native Computation Foundation (CNCF) - like 
-Docker & Kubernetes for example. 
+- **Proof of Work (PoW)**: Mining algorithm with adjustable difficulty
+- **Transaction System**: Full UTXO model with inputs and outputs
+- **Blockchain Structure**: Linked blocks with cryptographic hashing
+- **Coinbase Transactions**: Mining rewards for block creation
+- **Balance Tracking**: Query balances for any address
+- **Transaction Verification**: Validate transactions before adding to blockchain
+- **Chain Integrity Validation**: Verify the entire blockchain
 
-- At a high level, it allows you to define REQUEST and RESPONSE for RPC (Remote Procedure Calls) and handles all the rest for you. 
+## Architecture
 
-- On top of, it is modern, fast and efficient, build on top of HTTP/2, low latency, supports streaming, language independent, and makes it super easy to plug in authentication, load balancing, logging and monitoring.
+### Components
 
-- An RPC is a Remote Procedure Call. 
+1. **Block** (`block.go`)
+   - Contains transactions, timestamp, previous hash, and nonce
+   - Implements proof-of-work mining
+   - Uses SHA-256 hashing
 
-- In your client code, it seems like you are just calling a function directly on the server.
+2. **Blockchain** (`blockchain.go`)
+   - Manages the chain of blocks
+   - Handles UTXO tracking
+   - Validates and mines new blocks
+   - Provides balance queries
 
-- gRPC Server (Proto request and response)
+3. **Transaction** (`transaction.go`)
+   - UTXO-based transaction model
+   - Supports coinbase (mining reward) transactions
+   - Transaction inputs and outputs
+   - Digital signature verification (simplified)
 
-- At the core of gRPC,  we need to define messages and services using protocol buffers.
+## How It Works
 
-- The rest of the gRPC code will be generated for you and you will have to provide an implementation for it. 
+### Proof of Work
+The blockchain uses a proof-of-work algorithm where miners must find a nonce that produces a hash with a specific number of leading zeros (difficulty). The difficulty is set by `targetBits = 16`.
 
-- One .proto file works for over 12 programming languages (server and client) and allows you to use a framework that scales to millions of RPC per seconds. 
+### UTXO Model
+Transactions use the Unspent Transaction Output (UTXO) model:
+- **Inputs**: Reference previous transaction outputs
+- **Outputs**: Create new spendable amounts
+- **Change**: Excess amount returned to sender
 
-### Why do we need protobuffers? 
+### Mining Rewards
+Block miners receive a subsidy of 10 coins for each mined block.
 
-- Protobuffers are language agnostic. 
+## Usage
 
-- Data is binary and efficiently serialized (small payloads).
-
-- Very convenient for transporting a lot of data. 
-
-- Protocol Buffers allows for easy API evaluation using rules. 
-
-- Protocol buffers have services(service name and RPC endpoints), messages (data request and response)
-
-- gRPC uses Protocol Buffers for communications.
-
-- Parsing JSON is actually CPU intensive (because the format is human readable)
-
-- We can save Network Bandwith by using gRPC. (Less payload size)
-
-- The payload is binary, therefore very efficient to send / receive on a network and serialize / de-serializer on a CPU. 
-
-- gRPC leverages HTTP/2 as a backbone for communications. 
-
-https://imagekit.io/demo/http2-vs-http1
-
-- Microservices can interact with gRPC as below: 
-
-![gRPC](img/gRPC-microservice.png)
-
-
-### Scalability of gRPC
-
-- gRPC servers are async by default
-
-- This means they do not block threads on request
-
-- Therefore each gRPC server can serve millions of requests in parallel. 
-
-- gRPC clients can be async or sync (blocking)
-
-- The client decides which model works best for the performance needs. 
-
-- gRPC clients can perform client side load balancing.
-
-- An example: Google has 10 billion gRPC request being made per second internally. 
-
-
-### Security of gRPC
-
-- By default gRPC strongly advocates for you to use SSL (encryption over the wire) in your API.
-
-- Each language will provide an API to load gRPC with the enquired certificates and provide encryption capabilities.
-
-- Additionally, using Interceptors, we can also provide authentication.
-
-## Difference between REST and gRPC
-
-![comparison-table](img/comparison-rest-grpc.png)
-
-## REFERENCE
-
-Udemy - gRPC [Golang] Master Class - Build Modern API & Microservices
-
-## Commands
-
+### Build
 ```bash
-go get -u google.golang.org/grpc
-go get -u github.com/golang/protobuf/protoc-gen-go
+go build -o blockchain
 ```
 
-Generate protobuf file
-
+### Run
 ```bash
-protoc -I=./ --go_out=./ greet/greetpb/greet.proto
-``` 
+./blockchain
+```
 
+Or directly:
+```bash
+go run .
+```
+
+## Example Output
+
+The demo creates a blockchain with multiple transactions:
+
+1. **Genesis Block**: Creates initial coins for Alice
+2. **Transaction 1**: Alice sends 3 coins to Bob
+3. **Transaction 2**: Alice sends 2 coins to Charlie
+4. **Transaction 3**: Bob sends 1 coin to Charlie
+
+The program displays:
+- Mining progress with hash attempts
+- Transaction details
+- Balance updates
+- Complete blockchain structure
+- Blockchain validation results
+
+## Code Structure
+
+```
+.
+├── block.go          # Block structure and proof-of-work
+├── blockchain.go     # Blockchain management
+├── transaction.go    # Transaction handling
+├── main.go          # Demo application
+├── go.mod           # Go module definition
+└── README.md        # This file
+```
+
+## Key Concepts
+
+### Block Structure
+```go
+type Block struct {
+    Timestamp     int64
+    Transactions  []*Transaction
+    PreviousHash  []byte
+    Hash          []byte
+    Nonce         int
+    Height        int
+}
+```
+
+### Transaction Structure
+```go
+type Transaction struct {
+    ID   []byte
+    Vin  []TXInput   // Inputs
+    Vout []TXOutput  // Outputs
+}
+```
+
+## Technical Details
+
+- **Hashing Algorithm**: SHA-256
+- **Difficulty**: 16 bits (adjustable via `targetBits`)
+- **Subsidy**: 10 coins per block
+- **Encoding**: Gob encoding for transaction serialization
+
+## Security Features
+
+1. **Cryptographic Hashing**: Each block is linked via SHA-256 hashes
+2. **Proof of Work**: Prevents easy block creation
+3. **Transaction Validation**: Ensures sufficient funds before transactions
+4. **Chain Validation**: Verifies entire blockchain integrity
+5. **UTXO Tracking**: Prevents double-spending
+
+## Extending the Blockchain
+
+To add more features, consider:
+- Persistent storage (database)
+- Network layer (P2P)
+- Advanced cryptography (digital signatures with ECDSA)
+- Merkle trees for transaction verification
+- Smart contract support
+- API endpoints (REST/gRPC)
+
+## Requirements
+
+- Go 1.13 or higher
+- No external dependencies for core functionality
+
+## License
+
+MIT License
+
+---
+
+**Note**: This is an educational implementation. Production blockchains require additional security measures, networking capabilities, and optimizations.
